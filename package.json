@@ -1,0 +1,19 @@
+{
+  "name": "database-test-helper",
+  "version": "1.0.0",
+  "description": "helper to start, init, and close database during test",
+  "main": "db.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duongtdn/database-test-helper.git"
+  },
+  "author": "duongtdn",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/duongtdn/database-test-helper/issues"
+  },
+  "homepage": "https://github.com/duongtdn/database-test-helper#readme"
+}
