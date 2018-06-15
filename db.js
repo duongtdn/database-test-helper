@@ -9,11 +9,26 @@ const dbHelper = {
   _instance: {},
 
   start() {
-    console.log('Starting database...\n')
-    this._proc = spawn('docker', ['run', `-v ${process.cwd()}/dynamodb_local_db`, '-p', '3001:8000', 'cnadiminti/dynamodb-local'])
-    this._proc.stdout.on('data', (data) => console.log(`${data}`));
-    this._proc.stderr.on('data', (data) => console.log(`${data}`));
+    console.log('Starting database...\n');
+
+    this.runDockerImage(() => {
+      this._proc = spawn('docker', ['run', `-v ${process.cwd()}/dynamodb_local_db`, '-p', '3001:8000', 'cnadiminti/dynamodb-local'])
+      this._proc.stdout.on('data', (data) => console.log(`${data}`));
+      this._proc.stderr.on('data', (data) => console.log(`${data}`));
+    })
     return this;
+  },
+
+  runDockerImage(done) {
+    const patt = new RegExp ('cnadiminti/dynamodb-local');
+    const _p = spawn('docker', ['ps']);
+    _p.stdout.on('data', (data) => {
+      if (!patt.test(`${data}`)) {
+        done()
+      } else {
+        console.log('Database is up...\n');
+      }
+    });
   },
 
   add(instance) {
