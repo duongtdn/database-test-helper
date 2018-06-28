@@ -9,9 +9,8 @@ const dbHelper = {
   _instance: {},
 
   start() {
-    console.log('Starting database...\n');
-
     this.runDockerImage(() => {
+      console.log('Running docker...')
       this._proc = spawn('docker', ['run', `-v ${process.cwd()}/dynamodb_local_db`, '-p', '3001:8000', 'cnadiminti/dynamodb-local'])
       this._proc.stdout.on('data', (data) => console.log(`${data}`));
       this._proc.stderr.on('data', (data) => console.log(`${data}`));
@@ -20,13 +19,38 @@ const dbHelper = {
   },
 
   runDockerImage(done) {
+    this.checkPort(3001, () => this.checkDockerImage(done) )
+  },
+
+  checkPort(port, done) {
+    const net = require('net');
+    const server = net.createServer();
+
+    server.once('error', function(err) {
+      if (err.code === 'EADDRINUSE') {
+        // console.log(`Port ${port} is in use. Maybe another threat has started local database. SKipping...`)
+      }
+    });
+
+    server.once('listening', function() {
+      // port is ready for use
+      server.close();
+      // console.log(`Port ${port} is available`)
+      done()
+    });
+
+    server.listen(port);
+  },
+
+  checkDockerImage(done) {
     const patt = new RegExp ('cnadiminti/dynamodb-local');
     const _p = spawn('docker', ['ps']);
-    _p.stdout.on('data', (data) => {
-      if (!patt.test(`${data}`)) {
+    _p.stdout.once('data', (data) => {      
+      if (!patt.test(`${data}`)) {        
+        // console.log('There is no Docker image for Database is running');
         done()
       } else {
-        console.log('Database is up...\n');
+        // console.log('Docker image for Database is running...\n');
       }
     });
   },
