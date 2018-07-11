@@ -75,7 +75,7 @@ const dbHelper = {
 
     function _complete(key) {
       _done[key] = true;
-      const _cmplt = true;
+      let _cmplt = true;
       Object.keys(_done).forEach(k => {
         if (!_done[k]) _cmplt = false;
       })
